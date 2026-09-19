@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Laus Deo General Merchandise</title>
+  <link rel="icon" href="assets/logo.png">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root{--yellow:#ffca08;--orange:#f8931d;--brown:#39302a;--cream:#fffaf0;--muted:#766c64;--line:#eadfce;--red:#e64823;--green:#2f8f5b;--white:#fff}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#f7f3ec;color:var(--brown)}
+    button,input,select{font:inherit} button{cursor:pointer}
+    .hidden{display:none!important}.app{min-height:100vh}.login{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at top left,#fff7c9,transparent 45%),linear-gradient(135deg,#fff,#f7efe1)}
+    .login-card{width:min(430px,100%);background:#fff;border:1px solid var(--line);border-radius:24px;padding:32px;box-shadow:0 20px 60px #39302a18;text-align:center}.login-logo{width:150px;height:150px;object-fit:contain;margin:auto;display:block}
+    .brand{font-family:Georgia,serif;font-size:28px;font-weight:700;margin:8px 0}.tag{color:var(--muted);font-size:13px;margin-bottom:22px}
+    .field{text-align:left;margin:12px 0}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px;color:var(--muted)}
+    .field input,.field select{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:10px;background:#fff}
+    .primary{border:0;border-radius:10px;padding:12px 16px;background:var(--brown);color:#fff;font-weight:700}.primary:hover{background:#201a16}
+    .shell{display:flex;min-height:100vh}.sidebar{width:250px;background:var(--brown);color:#fff;padding:20px 14px;position:fixed;inset:0 auto 0 0;z-index:10}
+    .side-brand{display:flex;align-items:center;gap:10px;padding:6px 8px 20px;border-bottom:1px solid #ffffff20}.side-brand img{width:48px;height:48px;object-fit:contain}.side-brand b{font-size:15px;line-height:1.1}.side-brand span{display:block;font-size:10px;color:#f9d45b;margin-top:3px}
+    .nav{padding-top:16px}.nav button{width:100%;text-align:left;border:0;background:transparent;color:#eee;padding:12px;border-radius:10px;margin:2px 0}.nav button.active,.nav button:hover{background:#ffffff16;color:#fff}.nav .ico{width:24px;display:inline-block}
+    .sidebar-bottom{position:absolute;bottom:18px;left:14px;right:14px}.logout{width:100%;background:#ffffff10;color:#fff;border:1px solid #ffffff22;padding:10px;border-radius:10px}
+    main{margin-left:250px;flex:1;padding:26px;min-width:0}.topbar{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:22px}.topbar h1{margin:0;font-size:28px}.user-pill{background:#fff;border:1px solid var(--line);padding:8px 12px;border-radius:999px;font-size:12px}
+    .grid{display:grid;gap:16px}.cards{grid-template-columns:repeat(4,minmax(0,1fr))}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 6px 20px #39302a08}.metric-label{color:var(--muted);font-size:12px}.metric{font-size:30px;font-weight:800;margin-top:6px}.accent{border-top:4px solid var(--yellow)}.accent.orange{border-top-color:var(--orange)}.accent.red{border-top-color:var(--red)}.accent.green{border-top-color:var(--green)}
+    .section{margin-top:18px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.section-head h2{font-size:17px;margin:0}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap}.toolbar input,.toolbar select{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}.btn{padding:10px 13px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--brown);font-weight:700}.btn:hover{background:#fff7df}.btn.primary{background:var(--brown);color:#fff;border-color:var(--brown)}.btn.yellow{background:var(--yellow);border-color:var(--yellow)}.btn.danger{color:#a52c16}
+    table{width:100%;border-collapse:collapse;background:#fff}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}.table-wrap table{min-width:720px}.table-wrap th{background:#fff5cf;font-size:11px;text-transform:uppercase;letter-spacing:.04em}.table-wrap th,.table-wrap td{padding:11px 12px;border-bottom:1px solid #f0e8dc;text-align:left}.table-wrap tr:last-child td{border-bottom:0}
+    .badge{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:800}.available{background:#e4f6eb;color:#26734a}.low{background:#fff0c2;color:#876400}.out{background:#fde4dc;color:#a33a22}
+    .modal{position:fixed;inset:0;background:#1d1814aa;display:grid;place-items:center;padding:20px;z-index:30}.modal-card{background:#fff;width:min(620px,100%);max-height:90vh;overflow:auto;border-radius:18px;padding:22px}.modal-head{display:flex;justify-content:space-between;align-items:center}.modal-head h2{margin:0}.close{border:0;background:#f4eee6;border-radius:9px;padding:7px 10px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form-grid .full{grid-column:1/-1}
+    .pos{display:grid;grid-template-columns:1.4fr .9fr;gap:16px}.product-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-height:580px;overflow:auto}.product{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff;text-align:left}.product:hover{border-color:var(--orange);box-shadow:0 4px 14px #39302a10}.product b{display:block}.product small{color:var(--muted)}.cart-line{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);padding:10px 0}.qty{display:flex;align-items:center;gap:5px}.qty button{border:1px solid var(--line);background:#fff;border-radius:7px;width:28px;height:28px}
+    .total{display:flex;justify-content:space-between;font-size:20px;font-weight:800;padding-top:14px}.notice{padding:12px;border-radius:10px;background:#fff5cf;color:#6e5600;font-size:12px;margin-bottom:12px}.error{color:#b53019;font-size:12px;margin-top:8px}.success{color:#28734a;font-size:12px;margin-top:8px}
+    .empty{padding:35px;text-align:center;color:var(--muted)}.kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mini{padding:14px;border:1px dashed var(--line);border-radius:12px}.mini b{font-size:20px}
+    @media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}.pos{grid-template-columns:1fr}.product-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:720px){.sidebar{width:72px;padding:12px 8px}.side-brand{justify-content:center}.side-brand div,.nav button span:not(.ico),.sidebar-bottom{display:none}.nav button{text-align:center}.nav .ico{width:auto;font-size:18px}main{margin-left:72px;padding:16px}.cards{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}.product-grid{grid-template-columns:1fr}.topbar h1{font-size:22px}}
+  </style>
+</head>
+<body>
+<div id="login" class="login">
+  <div class="login-card">
+    <img class="login-logo" src="assets/logo.png" alt="Laus Deo logo">
+    <div class="brand">Laus Deo General Merchandise</div>
+    <div class="tag">Inventory & Point of Sale</div>
+    <div class="field"><label>Email</label><input id="email" type="email" placeholder="admin@example.com"></div>
+    <div class="field"><label>Password</label><input id="password" type="password" placeholder="••••••••"></div>
+    <button class="primary" style="width:100%" onclick="signIn()">Sign in</button>
+    <div id="loginMsg"></div>
+  </div>
+</div>
+
+<div id="app" class="shell hidden">
+  <aside class="sidebar">
+    <div class="side-brand"><img src="assets/logo.png"><div><b>Laus Deo</b><span>GENERAL MERCHANDISE</span></div></div>
+    <nav class="nav">
+      <button class="active" data-page="dashboard" onclick="showPage('dashboard')"><span class="ico">⌂</span><span>Dashboard</span></button>
+      <button data-page="inventory" onclick="showPage('inventory')"><span class="ico">▦</span><span>Inventory</span></button>
+      <button data-page="sales" onclick="showPage('sales')"><span class="ico">＋</span><span>New Sale</span></button>
+      <button data-page="transactions" onclick="showPage('transactions')"><span class="ico">↔</span><span>Transactions</span></button>
+      <button data-page="alerts" onclick="showPage('alerts')"><span class="ico">!</span><span>Low Stock</span></button>
+    </nav>
+    <div class="sidebar-bottom"><button class="logout" onclick="signOut()">Sign out</button></div>
+  </aside>
+  <main>
+    <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="user-pill" id="userEmail"></div></div>
+
+    <section id="page-dashboard" class="page">
+      <div class="grid cards">
+        <div class="card accent"><div class="metric-label">Inventory Items</div><div id="mItems" class="metric">0</div></div>
+        <div class="card accent orange"><div class="metric-label">Units in Stock</div><div id="mUnits" class="metric">0</div></div>
+        <div class="card accent red"><div class="metric-label">Low / Out of Stock</div><div id="mAlerts" class="metric">0</div></div>
+        <div class="card accent green"><div class="metric-label">Today's Sales</div><div id="mSales" class="metric">₱0.00</div></div>
+      </div>
+      <div class="section grid" style="grid-template-columns:1.2fr .8fr">
+        <div class="card"><div class="section-head"><h2>Recent Transactions</h2><button class="btn" onclick="showPage('transactions')">View all</button></div><div id="recent"></div></div>
+        <div class="card"><div class="section-head"><h2>Stock Alerts</h2><button class="btn" onclick="showPage('alerts')">View</button></div><div id="alertPreview"></div></div>
+      </div>
+    </section>
+
+    <section id="page-inventory" class="page hidden">
+      <div class="card">
+        <div class="section-head"><h2>Inventory</h2><div class="toolbar"><input id="invSearch" placeholder="Search item/category" oninput="renderInventory()"><button class="btn yellow" onclick="openItem()">+ Add item</button><button class="btn" onclick="exportExcel()">Download Excel</button></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Category</th><th>Item</th><th>SRP</th><th>Mark-up Price</th><th>Quantity</th><th>Status</th><th></th></tr></thead><tbody id="inventoryBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="page-sales" class="page hidden">
+      <div class="pos">
+        <div class="card"><div class="section-head"><h2>Products</h2><input id="posSearch" class="toolbar" placeholder="Search" oninput="renderProducts()"></div><div id="products" class="product-grid"></div></div>
+        <div class="card"><div class="section-head"><h2>Cart</h2><button class="btn" onclick="clearCart()">Clear</button></div><div id="cart"></div><div class="total"><span>Total</span><span id="cartTotal">₱0.00</span></div><button class="primary" style="width:100%;margin-top:14px" onclick="completeSale()">Complete Sale & Print Receipt</button><div id="saleMsg"></div></div>
+      </div>
+    </section>
+
+    <section id="page-transactions" class="page hidden">
+      <div class="card"><div class="section-head"><h2>Sales / Transactions</h2><div class="toolbar"><input id="txSearch" placeholder="Search receipt/item" oninput="renderTransactions()"><button class="btn" onclick="exportExcel()">Download Excel</button></div></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Receipt</th><th>Items</th><th>Total</th><th>Cashier</th><th></th></tr></thead><tbody id="txBody"></tbody></table></div></div>
+    </section>
+
+    <section id="page-alerts" class="page hidden">
+      <div class="card"><div class="section-head"><h2>Low-Stock Alerts</h2><span class="metric-label">Items at or below the alert threshold</span></div><div class="table-wrap"><table><thead><tr><th>Category</th><th>Item</th><th>Quantity</th><th>Alert Threshold</th><th>Status</th></tr></thead><tbody id="alertsBody"></tbody></table></div></div>
+    </section>
+  </main>
+</div>
+
+<div id="itemModal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-head"><h2 id="itemModalTitle">Add Item</h2><button class="close" onclick="closeModal()">✕</button></div>
+    <div class="form-grid" style="margin-top:16px">
+      <div class="field"><label>Category</label><input id="fCategory"></div>
+      <div class="field"><label>Item</label><input id="fItem"></div>
+      <div class="field"><label>SRP / Cost</label><input id="fSrp" type="number" step="0.01" min="0" oninput="calcMarkup()"></div>
+      <div class="field"><label>Mark-up Price (20%)</label><input id="fMarkup" type="number" readonly></div>
+      <div class="field"><label>Quantity</label><input id="fQty" type="number" min="0"></div>
+      <div class="field"><label>Low-stock threshold</label><input id="fThreshold" type="number" min="0" value="5"></div>
+    </div>
+    <div class="toolbar" style="justify-content:flex-end;margin-top:16px"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="saveItem()">Save item</button></div>
+    <div id="itemMsg"></div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://tcpfxwbrvhsxzcgxitbw.supabase.co";
+const SUPABASE_KEY = "sb_publishable_D6RVusXZxdkqsuS7Pv8fQw_kSY4LXJx";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let inventory=[], transactions=[], cart=[], editingId=null;
+
+const peso = n => "₱" + Number(n||0).toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc = s => String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+function status(q,t=5){return q<=0?"Out of Stock":q<=t?"Low Stock":"Stock Available"}
+function badge(q,t){let s=status(q,t);return `<span class="badge ${s==="Out of Stock"?"out":s==="Low Stock"?"low":"available"}">${s}</span>`}
+
+async function signIn(){
+  const email=document.getElementById("email").value.trim(), password=document.getElementById("password").value;
+  const msg=document.getElementById("loginMsg"); msg.className="error"; msg.textContent="";
+  const {error}=await db.auth.signInWithPassword({email,password});
+  if(error) msg.textContent=error.message;
+}
+async function signOut(){await db.auth.signOut()}
+db.auth.onAuthStateChange((event,session)=>{ if(session){document.getElementById("login").classList.add("hidden");document.getElementById("app").classList.remove("hidden");document.getElementById("userEmail").textContent=session.user.email||"Signed in"; loadAll();}else{document.getElementById("login").classList.remove("hidden");document.getElementById("app").classList.add("hidden")} });
+
+async function loadAll(){
+  const [a,b]=await Promise.all([db.from("inventory").select("*").order("category").order("item"),db.from("transactions").select("*, transaction_items(*)").order("created_at",{ascending:false}).limit(500)]);
+  if(a.error){alert("Database setup is incomplete: "+a.error.message);return}
+  inventory=a.data||[]; transactions=b.data||[]; refresh();
+}
+function refresh(){renderDashboard();renderInventory();renderProducts();renderTransactions();renderAlerts()}
+function showPage(p){
+  document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));
+  document.getElementById("page-"+p).classList.remove("hidden");
+  document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("active",x.dataset.page===p));
+  document.getElementById("pageTitle").textContent={dashboard:"Dashboard",inventory:"Inventory",sales:"New Sale",transactions:"Sales / Transactions",alerts:"Low-Stock Alerts"}[p];
+  if(p==="sales")renderProducts();
+}
+function renderDashboard(){
+  const units=inventory.reduce((s,x)=>s+Number(x.quantity||0),0), alerts=inventory.filter(x=>Number(x.quantity)<=Number(x.low_stock_threshold??5)).length;
+  const today=new Date().toISOString().slice(0,10);
+  const sales=transactions.filter(t=>String(t.created_at).slice(0,10)===today).reduce((s,t)=>s+Number(t.total||0),0);
+  mItems.textContent=inventory.length;mUnits.textContent=units;mAlerts.textContent=alerts;mSales.textContent=peso(sales);
+  recent.innerHTML=transactions.slice(0,5).map(t=>`<div class="cart-line"><div><b>${esc(t.receipt_no)}</b><small style="display:block">${new Date(t.created_at).toLocaleString()}</small></div><b>${peso(t.total)}</b></div>`).join("")||'<div class="empty">No transactions yet.</div>';
+  const al=inventory.filter(x=>Number(x.quantity)<=Number(x.low_stock_threshold??5)).slice(0,6);
+  alertPreview.innerHTML=al.map(x=>`<div class="cart-line"><div><b>${esc(x.item)}</b><small style="display:block">${esc(x.category||"Uncategorized")}</small></div>${badge(x.quantity,x.low_stock_threshold)}</div>`).join("")||'<div class="empty">No stock alerts.</div>';
+}
+function renderInventory(){
+  const q=(invSearch.value||"").toLowerCase();
+  const rows=inventory.filter(x=>(x.item+" "+(x.category||"")).toLowerCase().includes(q));
+  inventoryBody.innerHTML=rows.map(x=>`<tr><td>${esc(x.category)}</td><td><b>${esc(x.item)}</b></td><td>${peso(x.srp)}</td><td>${peso(x.markup_price)}</td><td>${x.quantity}</td><td>${badge(x.quantity,x.low_stock_threshold)}</td><td><button class="btn" onclick='openItem(${JSON.stringify(x)})'>Edit</button></td></tr>`).join("")||'<tr><td colspan="7" class="empty">No inventory items found.</td></tr>';
+}
+function renderProducts(){
+  const q=(posSearch.value||"").toLowerCase();
+  products.innerHTML=inventory.filter(x=>x.quantity>0 && (x.item+" "+(x.category||"")).toLowerCase().includes(q)).map(x=>`<button class="product" onclick="addToCart('${x.id}')"><b>${esc(x.item)}</b><small>${esc(x.category||"")} · ${peso(x.markup_price)}</small><small style="display:block;margin-top:6px">${x.quantity} in stock</small></button>`).join("")||'<div class="empty">No products available.</div>';
+  renderCart();
+}
+function addToCart(id){const p=inventory.find(x=>x.id===id);if(!p)return;const line=cart.find(x=>x.id===id);if(line){if(line.qty<p.quantity)line.qty++;else return}else cart.push({id:p.id,item:p.item,price:Number(p.markup_price),qty:1,max:p.quantity});renderCart()}
+function changeQty(id,d){const c=cart.find(x=>x.id===id);if(!c)return;c.qty=Math.max(0,Math.min(c.max,c.qty+d));cart=cart.filter(x=>x.qty>0);renderCart()}
+function clearCart(){cart=[];renderCart()}
+function renderCart(){cart.innerHTML=""}
+function renderCart(){
+  const el=document.getElementById("cart");el.innerHTML=cart.map(c=>`<div class="cart-line"><div><b>${esc(c.item)}</b><small style="display:block">${peso(c.price)} each</small></div><div class="qty"><button onclick="changeQty('${c.id}',-1)">−</button><span>${c.qty}</span><button onclick="changeQty('${c.id}',1)">+</button></div></div>`).join("")||'<div class="empty">Cart is empty.</div>';
+  cartTotal.textContent=peso(cart.reduce((s,c)=>s+c.price*c.qty,0));
+}
+async function completeSale(){
+  if(!cart.length){saleMsg.className="error";saleMsg.textContent="Add an item first.";return}
+  saleMsg.textContent="Processing...";
+  const items=cart.map(c=>({inventory_id:c.id,quantity:c.qty,unit_price:c.price}));
+  const {data,error}=await db.rpc("complete_sale",{p_items:items});
+  if(error){saleMsg.className="error";saleMsg.textContent=error.message;return}
+  const receiptNo=data.receipt_no;
+  await loadAll(); printReceipt(receiptNo); cart=[]; renderCart(); saleMsg.className="success";saleMsg.textContent="Sale completed.";
+}
+function printReceipt(receiptNo){
+  const t=transactions.find(x=>x.receipt_no===receiptNo); if(!t)return;
+  const w=window.open("","_blank","width=420,height=700"); const rows=(t.transaction_items||[]).map(i=>`<tr><td>${esc(i.item_name||"Item")}</td><td>${i.quantity}</td><td style="text-align:right">${peso(i.unit_price*i.quantity)}</td></tr>`).join("");
+  w.document.write(`<html><head><title>${esc(receiptNo)}</title><style>body{font-family:Arial;padding:24px;width:320px}h2{text-align:center;margin:0}p{text-align:center;font-size:12px}table{width:100%;border-collapse:collapse;font-size:12px}td{padding:6px 0;border-bottom:1px dotted #aaa}.total{font-size:18px;font-weight:bold;text-align:right;margin-top:14px}</style></head><body><h2>Laus Deo</h2><p>GENERAL MERCHANDISE<br>${esc(receiptNo)}<br>${new Date(t.created_at).toLocaleString()}</p><table>${rows}</table><div class="total">TOTAL ${peso(t.total)}</div><p>Thank you!</p><script>window.print();<\/script></body></html>`);w.document.close();
+}
+function renderTransactions(){
+  const q=(txSearch.value||"").toLowerCase();
+  const rows=transactions.filter(t=>((t.receipt_no||"")+" "+(t.transaction_items||[]).map(i=>i.item_name).join(" ")).toLowerCase().includes(q));
+  txBody.innerHTML=rows.map(t=>`<tr><td>${new Date(t.created_at).toLocaleString()}</td><td><b>${esc(t.receipt_no)}</b></td><td>${(t.transaction_items||[]).reduce((s,i)=>s+Number(i.quantity),0)} unit(s)</td><td>${peso(t.total)}</td><td>${esc(t.cashier_email||"")}</td><td><button class="btn" onclick="printReceipt('${t.receipt_no}')">Receipt</button></td></tr>`).join("")||'<tr><td colspan="6" class="empty">No transactions found.</td></tr>';
+}
+function renderAlerts(){
+  const rows=inventory.filter(x=>Number(x.quantity)<=Number(x.low_stock_threshold??5));
+  alertsBody.innerHTML=rows.map(x=>`<tr><td>${esc(x.category)}</td><td><b>${esc(x.item)}</b></td><td>${x.quantity}</td><td>${x.low_stock_threshold}</td><td>${badge(x.quantity,x.low_stock_threshold)}</td></tr>`).join("")||'<tr><td colspan="5" class="empty">No low-stock items.</td></tr>';
+}
+function openItem(x=null){
+  editingId=x?.id||null;itemModal.classList.remove("hidden");itemModalTitle.textContent=x?"Edit Item":"Add Item";
+  fCategory.value=x?.category||"";fItem.value=x?.item||"";fSrp.value=x?.srp??"";fQty.value=x?.quantity??0;fThreshold.value=x?.low_stock_threshold??5;calcMarkup();
+}
+function closeModal(){itemModal.classList.add("hidden");itemMsg.textContent=""}
+function calcMarkup(){fMarkup.value=Math.ceil(Number(fSrp.value||0)*1.20)}
+async function saveItem(){
+  const payload={category:fCategory.value.trim(),item:fItem.value.trim(),srp:Number(fSrp.value||0),markup_price:Math.ceil(Number(fSrp.value||0)*1.20),quantity:Number(fQty.value||0),low_stock_threshold:Number(fThreshold.value||5)};
+  if(!payload.item){itemMsg.className="error";itemMsg.textContent="Item name is required.";return}
+  const res=editingId?await db.from("inventory").update(payload).eq("id",editingId):await db.from("inventory").insert(payload);
+  if(res.error){itemMsg.className="error";itemMsg.textContent=res.error.message;return}
+  closeModal();await loadAll();
+}
+async function exportExcel(){
+  const inv=inventory.map(x=>({CATEGORY:x.category,ITEM:x.item,SRP:Number(x.srp), "MARK-UP PRICE":Number(x.markup_price),QUANTITY:Number(x.quantity),STATUS:status(x.quantity,x.low_stock_threshold)}));
+  const tx=transactions.flatMap(t=>(t.transaction_items||[]).map(i=>({DATE:new Date(t.created_at).toLocaleString(),RECEIPT:t.receipt_no,ITEM:i.item_name,QUANTITY:i.quantity,"UNIT PRICE":i.unit_price,TOTAL:Number(i.quantity)*Number(i.unit_price),CASHIER:t.cashier_email||""})));
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(inv),"INVENTORY");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(tx),"TRANSACTIONS");XLSX.writeFile(wb,"Laus_Deo_General_Merchandise_Records.xlsx");
+}
+</script>
+</body></html>
