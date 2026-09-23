@@ -6,7 +6,7 @@ This package is a Supabase-backed, multi-device inventory/POS website based on t
 - Laus Deo logo extracted from the workbook
 - Dashboard
 - Inventory CRUD
-- 20% mark-up calculation matching the workbook (`ROUNDUP(SRP*120%,0)`)
+- 50% mark-up calculation matching the workbook (`ROUNDUP(SRP*150%,0)`)
 - Low-stock alerts
 - Sales/POS cart
 - Atomic cloud sale processing (stock is decremented in the database)
