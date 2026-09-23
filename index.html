@@ -204,9 +204,9 @@ function openItem(x=null){
   fCategory.value=x?.category||"";fItem.value=x?.item||"";fSrp.value=x?.srp??"";fQty.value=x?.quantity??0;fThreshold.value=x?.low_stock_threshold??5;calcMarkup();
 }
 function closeModal(){itemModal.classList.add("hidden");itemMsg.textContent=""}
-function calcMarkup(){fMarkup.value=Math.ceil(Number(fSrp.value||0)*1.20)}
+function calcMarkup(){fMarkup.value=Math.ceil(Number(fSrp.value||0)*1.50)}
 async function saveItem(){
-  const payload={category:fCategory.value.trim(),item:fItem.value.trim(),srp:Number(fSrp.value||0),markup_price:Math.ceil(Number(fSrp.value||0)*1.20),quantity:Number(fQty.value||0),low_stock_threshold:Number(fThreshold.value||5)};
+  const payload={category:fCategory.value.trim(),item:fItem.value.trim(),srp:Number(fSrp.value||0),markup_price:Math.ceil(Number(fSrp.value||0)*1.50),quantity:Number(fQty.value||0),low_stock_threshold:Number(fThreshold.value||5)};
   if(!payload.item){itemMsg.className="error";itemMsg.textContent="Item name is required.";return}
   const res=editingId?await db.from("inventory").update(payload).eq("id",editingId):await db.from("inventory").insert(payload);
   if(res.error){itemMsg.className="error";itemMsg.textContent=res.error.message;return}
